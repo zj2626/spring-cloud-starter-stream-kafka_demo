@@ -1,0 +1,42 @@
+server:
+  port: 8080
+service:
+  name: AppRun
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          auto-add-partitions: false
+          auto-create-topics: true
+          autoAddPartitions: true
+          autoCreateTopics: true
+          # replicationFactor: 1
+          brokers: 127.0.0.1:9092
+          configuration:
+            auto:
+              offset:
+                reset: latest
+          consumerProperties:
+            max:
+              poll:
+                interval:
+                  ms: 600000
+                records: 100
+          min-partition-count: 1
+      bindings:
+        demoMessageConsumerInput:
+          destination: demo-message-consumer-topic
+          content-type: application/json
+          group: demo-message-consumer-topic-group
+          consumer:
+            partitioned: true
+            concurrency: 2
+        demoMessageConsumerOutput:
+          destination: demo-message-consumer-topic
+          content-type: application/json
+          producer:
+            partitionCount: 2
+            partitionKeyExpression: payload.id
+            partitionKeyExtractorName: customPartitionKeyExtractor
+            partitionSelectorName: customPartitionSelector
